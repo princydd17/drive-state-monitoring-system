@@ -2,7 +2,7 @@
 
 A comprehensive, real-time drowsiness detection system with advanced computer vision, machine learning algorithms, voice commands, and backend integration for driver safety monitoring.
 
-## 🚀 Features
+## Features
 
 ### Core Detection
 - **Multi-Algorithm Fusion**: EAR (Eye Aspect Ratio), MAR (Mouth Aspect Ratio), head pose estimation
@@ -31,7 +31,7 @@ A comprehensive, real-time drowsiness detection system with advanced computer vi
 - **Cross-platform**: Windows, macOS, and Linux support
 - **Modular Architecture**: Easy to extend and customize
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Drowsiness_Detection-main/
@@ -61,7 +61,7 @@ Drowsiness_Detection-main/
 └── requirements.txt       # Main dependencies
 ```
 
-## 🛠️ Installation
+## Installation
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -92,7 +92,7 @@ Drowsiness_Detection-main/
    python -c "import cv2, dlib, numpy; print('All dependencies installed successfully!')"
    ```
 
-## 🚀 Usage
+## Usage
 
 ### Quick Start
 
@@ -125,7 +125,7 @@ Available voice commands:
 - "Start recording" - Begin video recording
 - "Stop recording" - End video recording
 
-## 🔧 Configuration
+## Configuration
 
 ### Main Configuration Parameters
 
@@ -177,7 +177,7 @@ QUIET_PRESET = {
 }
 ```
 
-## 🔍 Detection Algorithms
+## Detection Algorithms
 
 ### 1. Eye Aspect Ratio (EAR)
 - Calculates the ratio of eye height to width
@@ -204,7 +204,7 @@ QUIET_PRESET = {
 - Weighted voting system
 - Reduces false positives and negatives
 
-## 📊 Backend API
+## Backend API
 
 ### Endpoints
 
@@ -223,7 +223,7 @@ QUIET_PRESET = {
 - `session_ended` - Session end
 - `alert_triggered` - Alert activation
 
-## 📈 Data Analytics
+## Data Analytics
 
 ### Metrics Calculated
 
@@ -240,7 +240,7 @@ QUIET_PRESET = {
 - Summary statistics
 - Recommendations for improvement
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -271,67 +271,3 @@ QUIET_PRESET = {
 - Adjust processing intervals
 - Enable hardware acceleration
 
-## 🔧 Development
-
-### Adding New Features
-
-1. **Create new detection algorithm**
-   ```python
-   class NewDetector:
-       def __init__(self, config):
-           self.config = config
-       
-       def detect(self, frame):
-           # Implementation
-           return result
-   ```
-
-2. **Integrate with main system**
-   ```python
-   # Add to driver_monitor.py
-   from .new_detector import NewDetector
-   
-   # Initialize in __init__
-   self.new_detector = NewDetector(config)
-   
-   # Use in detection loop
-   result = self.new_detector.detect(frame)
-   ```
-
-### Testing
-
-```bash
-# Run compatibility tests
-python tests/test_compatibility.py
-
-# Run specific module tests
-python -m pytest tests/
-```
-
-## 📝 License
-
-This project is based on the original work from [sagardhande2942/Drowsiness_Detection](https://github.com/sagardhande2942/Drowsiness_Detection) and has been significantly enhanced with additional features and improvements.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📞 Support
-
-For issues and questions:
-- Check the troubleshooting section
-- Review the configuration documentation
-- Open an issue on GitHub
-
-## 🔮 Future Enhancements
-
-- **Mobile App**: Companion mobile application
-- **Cloud Integration**: Cloud-based data storage and analysis
-- **Advanced ML**: Deep learning models for improved accuracy
-- **IoT Integration**: Integration with vehicle systems
-- **Real-time Alerts**: SMS/email notifications
-- **Multi-camera Support**: Support for multiple camera feeds
