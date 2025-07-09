@@ -1,0 +1,6 @@
+*.docx
+__pycache__/
+Drowsy/
+*.csv
+/Drowsy Driver Project
+DrowsyVirtual/
