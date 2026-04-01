@@ -165,10 +165,10 @@ class DrowsinessDetectionClient:
     
     def log_yawn(self, mar: float, duration: float = 0.0) -> bool:
         """Log yawn detection event"""
-        severity = "high" if mar > 35 else "medium" if mar > 29 else "low"
+        severity = "high" if mar > 0.8 else "medium" if mar > 0.65 else "low"
         details = {
             "mar": mar,
-            "threshold": 29
+            "threshold": 0.5
         }
         return self.log_event("yawn", severity, duration, details)
     
@@ -287,7 +287,7 @@ if __name__ == "__main__":
         # Log some test events
         client.log_drowsiness(0.15, 20, 5.2)
         client.log_distraction("left", 2.1)
-        client.log_yawn(35.5, 1.8)
+        client.log_yawn(0.75, 1.8)
         
         # Get statistics
         stats = client.get_statistics(days=1)

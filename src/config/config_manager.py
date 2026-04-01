@@ -45,7 +45,7 @@ class ConfigManager:
             # Detection thresholds
             "thresholds": {
                 "ear": 0.25,
-                "mar": 29,
+                "mar": 0.5,
                 "consecutive_frames": 4,
                 "distraction": 15,
                 "blink_duration": 0.3
@@ -283,7 +283,7 @@ class ConfigManager:
             "high_sensitivity": {
                 "thresholds": {
                     "ear": 0.20,
-                    "mar": 25,
+                    "mar": 0.4,
                     "consecutive_frames": 2
                 },
                 "user": {
@@ -293,7 +293,7 @@ class ConfigManager:
             "low_sensitivity": {
                 "thresholds": {
                     "ear": 0.30,
-                    "mar": 35,
+                    "mar": 0.6,
                     "consecutive_frames": 8
                 },
                 "user": {

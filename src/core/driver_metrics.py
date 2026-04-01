@@ -100,7 +100,7 @@ def detect_drowsiness(left_ear: float, right_ear: float, threshold: float = 0.25
     
     return False, "none", 0.0
 
-def detect_yawn(mar: float, threshold: float = 29.0) -> Tuple[bool, str, float]:
+def detect_yawn(mar: float, threshold: float = 0.5) -> Tuple[bool, str, float]:
     """
     Detect yawning based on mouth aspect ratio.
     
@@ -113,10 +113,10 @@ def detect_yawn(mar: float, threshold: float = 29.0) -> Tuple[bool, str, float]:
     """
     if mar > threshold:
         # Determine severity based on MAR value
-        if mar > 50:
+        if mar > 0.8:
             severity = "severe"
             confidence = 0.95
-        elif mar > 40:
+        elif mar > 0.65:
             severity = "moderate"
             confidence = 0.85
         else:

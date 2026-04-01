@@ -1,0 +1,29 @@
+{
+  "input": "data/v1/sample_benchmark.csv",
+  "rule_only": {
+    "accuracy": 0.5833333333333334,
+    "precision_macro": 0.8,
+    "recall_macro": 0.5666666666666667,
+    "f1_macro": 0.6222222222222221,
+    "false_alerts_per_hour": 327.27272727272725
+  },
+  "ml_only": {
+    "accuracy": 0.5833333333333334,
+    "precision_macro": 0.8,
+    "recall_macro": 0.5666666666666667,
+    "f1_macro": 0.6222222222222221,
+    "false_alerts_per_hour": 327.27272727272725
+  },
+  "fused": {
+    "accuracy": 1.0,
+    "precision_macro": 1.0,
+    "recall_macro": 1.0,
+    "f1_macro": 1.0,
+    "false_alerts_per_hour": 0.0
+  },
+  "ranking": [
+    "fused",
+    "rule_only",
+    "ml_only"
+  ]
+}

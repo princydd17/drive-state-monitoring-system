@@ -11,6 +11,7 @@ import threading
 import json
 import os
 import sys
+from collections import deque
 from datetime import datetime
 import warnings
 
@@ -48,7 +49,7 @@ class DriverMonitorSystem:
         self.config = {
             'camera_index': 0,
             'ear_threshold': 0.25,
-            'mar_threshold': 29,
+            'mar_threshold': 0.5,
             'consecutive_frames_threshold': 4,
             'distraction_threshold': 15,
             'enable_ai': True,
@@ -56,6 +57,12 @@ class DriverMonitorSystem:
             'enable_voice_commands': True,
             'enable_api_logging': True,
             'alert_cooldown': 3.0,
+            'minimum_drowsy_duration': 1.5,
+            'minimum_yawn_duration': 0.8,
+            'calibration_duration': 45.0,
+            'smoothing_alpha': 0.25,
+            'hysteresis_margin': 0.02,
+            'event_window_seconds': 60.0,
             'display_mode': 'full',  # full, minimal, none
             'save_video': False,
             'video_path': 'driver_monitor.mp4'
@@ -72,6 +79,29 @@ class DriverMonitorSystem:
         self.frame_count = 0
         self.detection_history = []
         self.alert_history = []
+        self.last_alert_time = 0.0
+        self.fps_estimate = 30.0
+        self._last_frame_ts = None
+        self._runtime_features = {}
+
+        # Session calibration and temporal tracking
+        self.dynamic_thresholds = {
+            'ear': self.config['ear_threshold'],
+            'mar': self.config['mar_threshold']
+        }
+        self.is_calibrated = False
+        self.calibration_started_at = None
+        self.calibration_data = {'ear': [], 'mar': []}
+        self.ear_history = deque(maxlen=900)
+        self.mar_history = deque(maxlen=900)
+        self.eye_closed_history = deque(maxlen=900)
+        self.blink_timestamps = deque()
+        self.yawn_timestamps = deque()
+        self.closed_eye_started_at = None
+        self.yawn_started_at = None
+        self.yawn_recorded = False
+        self.drowsy_state = False
+        self.drowsy_started_at = None
         
         # Statistics
         self.stats = {
@@ -235,9 +265,14 @@ class DriverMonitorSystem:
         Returns:
             dict: Detection results
         """
+        now = time.time()
+        self._update_fps(now)
+        if self.calibration_started_at is None:
+            self.calibration_started_at = now
+
         results = {
             'frame_number': self.frame_count,
-            'timestamp': time.time(),
+            'timestamp': now,
             'face_detected': False,
             'drowsiness': {
                 'detected': False,
@@ -256,7 +291,12 @@ class DriverMonitorSystem:
             },
             'metrics': {
                 'ear': 0.0,
+                'left_ear': 0.0,
+                'right_ear': 0.0,
                 'mar': 0.0,
+                'blink_frequency': 0.0,
+                'eye_closure_duration': 0.0,
+                'yawn_frequency': 0.0,
                 'head_pose': (0.0, 0.0, 0.0)
             }
         }
@@ -270,20 +310,8 @@ class DriverMonitorSystem:
                     
                     # Extract metrics
                     eye_analysis = vision_results['eye_analysis']
-                    results['metrics']['ear'] = eye_analysis['avg_ear']
-                    
-                    # Detect drowsiness
-                    if eye_analysis['avg_ear'] < self.config['ear_threshold']:
-                        results['drowsiness']['detected'] = True
-                        results['drowsiness']['confidence'] = eye_analysis['blink_confidence']
-                        
-                        # Determine severity
-                        if eye_analysis['avg_ear'] < 0.15:
-                            results['drowsiness']['severity'] = 'high'
-                        elif eye_analysis['avg_ear'] < 0.20:
-                            results['drowsiness']['severity'] = 'medium'
-                        else:
-                            results['drowsiness']['severity'] = 'low'
+                    left_ear = float(eye_analysis.get('left_ear', 0.0))
+                    right_ear = float(eye_analysis.get('right_ear', 0.0))
                     
                     # Analyze head pose
                     if vision_results['head_pose']:
@@ -297,15 +325,39 @@ class DriverMonitorSystem:
                     
                     # Analyze mouth
                     mouth_analysis = vision_results['mouth_analysis']
-                    results['metrics']['mar'] = mouth_analysis['mar']
-                    
-                    if mouth_analysis['is_yawning']:
-                        results['yawn']['detected'] = True
-                        results['yawn']['severity'] = mouth_analysis['yawn_severity']
-                        results['yawn']['confidence'] = 0.9
+                    mar = float(mouth_analysis.get('mar', 0.0))
+
+                    runtime = self._update_temporal_state(left_ear, right_ear, mar, now, True)
+                    self._runtime_features = runtime
+                    results['metrics']['left_ear'] = runtime['left_ear']
+                    results['metrics']['right_ear'] = runtime['right_ear']
+                    results['metrics']['ear'] = runtime['ear']
+                    results['metrics']['mar'] = runtime['mar']
+                    results['metrics']['blink_frequency'] = runtime['blink_frequency']
+                    results['metrics']['eye_closure_duration'] = runtime['eye_closure_duration']
+                    results['metrics']['yawn_frequency'] = runtime['yawn_frequency']
+
+                    # Detect drowsiness using smoothed value + hysteresis + duration
+                    drowsy_detected, drowsy_severity, drowsy_confidence = self._detect_drowsy_state(runtime, now)
+                    results['drowsiness']['detected'] = drowsy_detected
+                    results['drowsiness']['severity'] = drowsy_severity
+                    results['drowsiness']['confidence'] = drowsy_confidence
+
+                    # Detect yawn using duration/frequency windows
+                    yawn_detected, yawn_severity, yawn_confidence = self._detect_yawn_state(runtime)
+                    results['yawn']['detected'] = yawn_detected
+                    results['yawn']['severity'] = yawn_severity
+                    results['yawn']['confidence'] = yawn_confidence
+
+                    # Apply session calibration while face is visible
+                    self._update_calibration(runtime['ear'], runtime['mar'], now)
                 
             except Exception as e:
                 print(f"Vision processing error: {e}")
+        else:
+            self._runtime_features = self._update_temporal_state(0.0, 0.0, 0.0, now, False)
+            self.drowsy_state = False
+            self.drowsy_started_at = None
         
         # Use AI detector if available
         if self.ai_detector and results['face_detected']:
@@ -356,6 +408,8 @@ class DriverMonitorSystem:
             self.stats['distraction_detections'] += 1
         if results['yawn']['detected']:
             self.stats['yawn_detections'] += 1
+
+        self._maybe_trigger_alert(results, now)
         
         # Send to API
         if self.api_client:
@@ -368,21 +422,179 @@ class DriverMonitorSystem:
     
     def _extract_ai_features(self, detection_result):
         """Extract features for AI prediction."""
+        runtime = self._runtime_features if self._runtime_features else {}
+        left_ear = detection_result['metrics'].get('left_ear', runtime.get('left_ear', 0.0))
+        right_ear = detection_result['metrics'].get('right_ear', runtime.get('right_ear', 0.0))
+        avg_ear = detection_result['metrics'].get('ear', runtime.get('ear', 0.0))
+        ear_variance = runtime.get('ear_variance', 0.0)
+        blink_frequency = detection_result['metrics'].get('blink_frequency', runtime.get('blink_frequency', 0.0))
+        eye_closure_duration = detection_result['metrics'].get('eye_closure_duration', runtime.get('eye_closure_duration', 0.0))
+        yawn_frequency = detection_result['metrics'].get('yawn_frequency', runtime.get('yawn_frequency', 0.0))
+
         features = [
-            detection_result['metrics']['ear'],
-            0.0,  # Placeholder for right EAR
-            detection_result['metrics']['ear'],
-            0.0,  # EAR variance
-            0.0,  # Blink frequency
-            0.0,  # Eye closure duration
+            left_ear,
+            right_ear,
+            avg_ear,
+            ear_variance,
+            blink_frequency,
+            eye_closure_duration,
             detection_result['metrics']['head_pose'][0],  # Pitch
             detection_result['metrics']['head_pose'][1],  # Yaw
             detection_result['metrics']['head_pose'][2],  # Roll
             detection_result['metrics']['mar'],
-            0.0   # Yawn frequency
+            yawn_frequency
         ]
         
         return np.array(features)
+
+    def _update_fps(self, now):
+        """Estimate FPS from frame timestamps."""
+        if self._last_frame_ts is not None:
+            dt = max(now - self._last_frame_ts, 1e-3)
+            instant_fps = 1.0 / dt
+            self.fps_estimate = (0.9 * self.fps_estimate) + (0.1 * instant_fps)
+        self._last_frame_ts = now
+
+    def _update_temporal_state(self, left_ear, right_ear, mar, now, face_detected):
+        """Update smoothed streams, blink/yawn timers, and event frequencies."""
+        if face_detected:
+            raw_ear = (left_ear + right_ear) / 2.0
+            prev_ear = self.ear_history[-1] if self.ear_history else raw_ear
+            prev_mar = self.mar_history[-1] if self.mar_history else mar
+            alpha = float(self.config.get('smoothing_alpha', 0.25))
+            smoothed_ear = (alpha * raw_ear) + ((1 - alpha) * prev_ear)
+            smoothed_mar = (alpha * mar) + ((1 - alpha) * prev_mar)
+            self.ear_history.append(smoothed_ear)
+            self.mar_history.append(smoothed_mar)
+        else:
+            smoothed_ear = self.ear_history[-1] if self.ear_history else 0.0
+            smoothed_mar = self.mar_history[-1] if self.mar_history else 0.0
+
+        ear_thr = self.dynamic_thresholds['ear']
+        mar_thr = self.dynamic_thresholds['mar']
+
+        eye_closed = face_detected and smoothed_ear < ear_thr
+        self.eye_closed_history.append(1 if eye_closed else 0)
+        if eye_closed and self.closed_eye_started_at is None:
+            self.closed_eye_started_at = now
+        if not eye_closed and self.closed_eye_started_at is not None:
+            closure_dur = now - self.closed_eye_started_at
+            if 0.08 <= closure_dur <= 0.8:
+                self.blink_timestamps.append(now)
+            self.closed_eye_started_at = None
+
+        yawn_active = face_detected and smoothed_mar > mar_thr
+        if yawn_active and self.yawn_started_at is None:
+            self.yawn_started_at = now
+            self.yawn_recorded = False
+        if yawn_active and self.yawn_started_at is not None and not self.yawn_recorded:
+            if (now - self.yawn_started_at) >= float(self.config.get('minimum_yawn_duration', 0.8)):
+                self.yawn_timestamps.append(now)
+                self.yawn_recorded = True
+        if not yawn_active:
+            self.yawn_started_at = None
+            self.yawn_recorded = False
+
+        window = float(self.config.get('event_window_seconds', 60.0))
+        while self.blink_timestamps and (now - self.blink_timestamps[0]) > window:
+            self.blink_timestamps.popleft()
+        while self.yawn_timestamps and (now - self.yawn_timestamps[0]) > window:
+            self.yawn_timestamps.popleft()
+
+        eye_closure_duration = 0.0
+        if self.closed_eye_started_at is not None:
+            eye_closure_duration = now - self.closed_eye_started_at
+
+        ear_variance = float(np.var(self.ear_history)) if len(self.ear_history) > 1 else 0.0
+        return {
+            'left_ear': float(left_ear),
+            'right_ear': float(right_ear),
+            'ear': float(smoothed_ear),
+            'mar': float(smoothed_mar),
+            'ear_variance': ear_variance,
+            'eye_closure_duration': float(eye_closure_duration),
+            'blink_frequency': float(len(self.blink_timestamps) * (60.0 / window)),
+            'yawn_frequency': float(len(self.yawn_timestamps) * (60.0 / window)),
+            'yawn_active': yawn_active
+        }
+
+    def _update_calibration(self, ear, mar, now):
+        """Collect baseline and adapt thresholds once per session."""
+        if self.is_calibrated:
+            return
+        if (now - self.calibration_started_at) > float(self.config.get('calibration_duration', 45.0)):
+            if len(self.calibration_data['ear']) > 30:
+                base_ear = float(np.median(self.calibration_data['ear']))
+                base_mar = float(np.median(self.calibration_data['mar'])) if self.calibration_data['mar'] else self.config['mar_threshold']
+                self.dynamic_thresholds['ear'] = min(self.config['ear_threshold'], max(0.12, base_ear * 0.78))
+                self.dynamic_thresholds['mar'] = max(self.config['mar_threshold'], base_mar * 1.45)
+                self.is_calibrated = True
+                print(
+                    f"Calibration complete: EAR threshold={self.dynamic_thresholds['ear']:.3f}, "
+                    f"MAR threshold={self.dynamic_thresholds['mar']:.3f}"
+                )
+            return
+
+        if ear > 0 and mar > 0:
+            self.calibration_data['ear'].append(ear)
+            self.calibration_data['mar'].append(mar)
+
+    def _detect_drowsy_state(self, runtime, now):
+        """Drowsiness detection with smoothing, hysteresis and minimum duration."""
+        ear = runtime['ear']
+        enter_thr = self.dynamic_thresholds['ear']
+        exit_thr = enter_thr + float(self.config.get('hysteresis_margin', 0.02))
+        min_duration = float(self.config.get('minimum_drowsy_duration', 1.5))
+        eye_closure_duration = runtime['eye_closure_duration']
+
+        if not self.drowsy_state and ear < enter_thr and eye_closure_duration >= min_duration:
+            self.drowsy_state = True
+            self.drowsy_started_at = now
+        elif self.drowsy_state and ear > exit_thr:
+            self.drowsy_state = False
+            self.drowsy_started_at = None
+
+        if not self.drowsy_state:
+            return False, 'none', 0.0
+
+        if ear < max(0.12, enter_thr - 0.08):
+            return True, 'high', 0.95
+        if ear < max(0.15, enter_thr - 0.04):
+            return True, 'medium', 0.85
+        return True, 'low', 0.75
+
+    def _detect_yawn_state(self, runtime):
+        """Yawn detection using duration and frequency window."""
+        if not runtime['yawn_active']:
+            return False, 'none', 0.0
+        yawn_freq = runtime['yawn_frequency']
+        if yawn_freq >= 4:
+            return True, 'high', 0.95
+        if yawn_freq >= 2:
+            return True, 'medium', 0.85
+        return True, 'low', 0.75
+
+    def _maybe_trigger_alert(self, results, now):
+        """Trigger alerts with global cooldown and minimum event persistence."""
+        if (now - self.last_alert_time) < float(self.config.get('alert_cooldown', 3.0)):
+            return
+        if not self.alert_system:
+            return
+
+        triggered = False
+        if results['drowsiness']['detected'] and self._runtime_features.get('eye_closure_duration', 0.0) >= float(self.config.get('minimum_drowsy_duration', 1.5)):
+            self.alert_system.trigger_escalating_alert('drowsiness', results['drowsiness']['severity'])
+            triggered = True
+        elif results['yawn']['detected']:
+            self.alert_system.trigger_alert('yawn', results['yawn']['severity'])
+            triggered = True
+        elif results['distraction']['detected']:
+            self.alert_system.trigger_alert('distraction', 'medium')
+            triggered = True
+
+        if triggered:
+            self.last_alert_time = now
+            self.stats['alerts_triggered'] += 1
     
     def _display_results(self, frame, results):
         """Display detection results on frame."""
@@ -416,7 +628,11 @@ class DriverMonitorSystem:
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
             cv2.putText(frame, f"MAR: {results['metrics']['mar']:.3f}", (10, 180), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-            cv2.putText(frame, f"Frame: {self.frame_count}", (10, 210), 
+            cv2.putText(frame, f"Blinks/min: {results['metrics']['blink_frequency']:.1f}", (10, 210), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+            cv2.putText(frame, f"Yawns/min: {results['metrics']['yawn_frequency']:.1f}", (10, 240), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+            cv2.putText(frame, f"Frame: {self.frame_count}", (10, 270), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
         
         # Draw controls
@@ -458,6 +674,9 @@ class DriverMonitorSystem:
         print(f"Distraction detections: {self.stats['distraction_detections']}")
         print(f"Yawn detections: {self.stats['yawn_detections']}")
         print(f"Alerts triggered: {self.stats['alerts_triggered']}")
+        print(f"Calibrated: {self.is_calibrated}")
+        print(f"Active EAR threshold: {self.dynamic_thresholds['ear']:.3f}")
+        print(f"Active MAR threshold: {self.dynamic_thresholds['mar']:.3f}")
         
         if self.alert_system:
             status = self.alert_system.get_system_status()
@@ -542,7 +761,7 @@ def main():
     config = {
         'camera_index': 0,
         'ear_threshold': 0.25,
-        'mar_threshold': 29,
+        'mar_threshold': 0.5,
         'enable_ai': True,
         'enable_multi_detection': True,
         'enable_voice_commands': True,

@@ -438,11 +438,11 @@ class VisionProcessor:
             analysis['mar'] = mar
             
             # Detect yawning
-            if mar > 29.0:
+            if mar > 0.5:
                 analysis['is_yawning'] = True
-                if mar > 50.0:
+                if mar > 0.8:
                     analysis['yawn_severity'] = 'severe'
-                elif mar > 40.0:
+                elif mar > 0.65:
                     analysis['yawn_severity'] = 'moderate'
                 else:
                     analysis['yawn_severity'] = 'mild'

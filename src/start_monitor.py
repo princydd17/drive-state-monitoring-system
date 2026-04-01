@@ -60,7 +60,7 @@ def load_configuration(args):
     config = {
         'camera_index': 0,
         'ear_threshold': 0.25,
-        'mar_threshold': 29,
+        'mar_threshold': 0.5,
         'consecutive_frames_threshold': 4,
         'distraction_threshold': 15,
         'enable_ai': True,
@@ -109,13 +109,13 @@ def apply_sensitivity_settings(config):
     
     if sensitivity == 'low':
         config['ear_threshold'] = 0.20
-        config['mar_threshold'] = 35
+        config['mar_threshold'] = 0.6
         config['consecutive_frames_threshold'] = 6
         config['distraction_threshold'] = 20
         print("Applied low sensitivity settings")
     elif sensitivity == 'high':
         config['ear_threshold'] = 0.30
-        config['mar_threshold'] = 25
+        config['mar_threshold'] = 0.4
         config['consecutive_frames_threshold'] = 2
         config['distraction_threshold'] = 10
         print("Applied high sensitivity settings")
@@ -153,8 +153,8 @@ def validate_config(config):
             print("Error: EAR threshold must be between 0 and 1")
             return False
         
-        if config['mar_threshold'] <= 0:
-            print("Error: MAR threshold must be positive")
+        if config['mar_threshold'] <= 0 or config['mar_threshold'] > 2:
+            print("Error: MAR threshold must be in a ratio range (0, 2]")
             return False
         
         # Check cooldown
@@ -266,7 +266,7 @@ CONFIGURATION FILE FORMAT:
     {
         "camera_index": 0,
         "ear_threshold": 0.25,
-        "mar_threshold": 29,
+        "mar_threshold": 0.5,
         "enable_ai": true,
         "enable_voice_commands": true,
         "display_mode": "full"

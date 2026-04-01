@@ -126,7 +126,7 @@ with app.app_context():
         ('EYE_AR_THRESH', '0.25', 'Eye Aspect Ratio threshold for drowsiness detection'),
         ('EYE_AR_CONSEC_FRAMES', '4', 'Consecutive frames threshold for drowsiness'),
         ('DISC_COUNT_THRES', '7', 'Distraction detection threshold'),
-        ('MAR_THRES', '29', 'Mouth Aspect Ratio threshold'),
+        ('MAR_THRES', '0.5', 'Mouth Aspect Ratio threshold (ratio-scale)'),
         ('ALERT_ENABLED', 'true', 'Enable audio alerts'),
         ('LOG_ENABLED', 'true', 'Enable event logging'),
         ('API_ENABLED', 'true', 'Enable API endpoints')
