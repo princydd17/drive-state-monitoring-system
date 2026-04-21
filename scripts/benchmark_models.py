@@ -6,7 +6,7 @@ Expected CSV columns:
   - ground_truth
   - rule_pred
   - ml_pred
-  - fused_pred
+  - fused_pred (hybrid/fused)
 Optional:
   - timestamp
   - fps
@@ -44,6 +44,20 @@ def evaluate_variant(df, gt_col, pred_col, positive_label):
         "false_alerts_per_hour": false_alerts_per_hour(df, gt_col, pred_col, positive_label),
     }
 
+def state_flips_per_minute(df, pred_col):
+    if len(df) < 2:
+        return 0.0
+    flips = (df[pred_col].astype(str) != df[pred_col].astype(str).shift(1)).sum() - 1
+    flips = max(0, int(flips))
+    if "timestamp" in df.columns and len(df) > 1:
+        seconds = float(df["timestamp"].max() - df["timestamp"].min())
+    elif "fps" in df.columns and len(df) > 0:
+        seconds = float(len(df) / max(df["fps"].mean(), 1e-6))
+    else:
+        seconds = float(len(df) / 30.0)
+    minutes = max(seconds / 60.0, 1e-9)
+    return float(flips / minutes)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Benchmark rule-only vs ML-only vs fused.")
@@ -79,6 +93,11 @@ def main():
         key=lambda x: (-x[1]["f1_macro"], x[1]["false_alerts_per_hour"]),
     )
     result["ranking"] = [name for name, _ in ranked]
+    result["stability"] = {
+        "rule_only_flips_per_min": state_flips_per_minute(df, args.rule_col),
+        "ml_only_flips_per_min": state_flips_per_minute(df, args.ml_col),
+        "fused_flips_per_min": state_flips_per_minute(df, args.fused_col),
+    }
 
     print(json.dumps(result, indent=2))
 

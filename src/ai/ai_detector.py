@@ -6,6 +6,7 @@ Provides Random Forest, SVM, and ensemble detection models
 
 import numpy as np
 import joblib
+import json
 import os
 import sys
 import time
@@ -38,6 +39,7 @@ class DriverAIDetector:
         self.model_path = model_path
         self.model = None
         self.scaler = None
+        self.model_version = "legacy"
         self.feature_names = [
             'left_ear', 'right_ear', 'avg_ear', 'ear_variance', 'blink_frequency',
             'eye_closure_duration', 'head_pitch', 'head_yaw', 'head_roll',
@@ -64,8 +66,27 @@ class DriverAIDetector:
             if os.path.exists(self.model_path):
                 # Load existing model
                 model_data = joblib.load(self.model_path)
-                self.model = model_data['model']
-                self.scaler = model_data['scaler']
+                if isinstance(model_data, dict) and 'model' in model_data:
+                    self.model = model_data['model']
+                    self.scaler = model_data.get('scaler')
+                    self.feature_names = model_data.get('feature_names', self.feature_names)
+                else:
+                    # Backward support for direct serialized estimators/pipelines.
+                    self.model = model_data
+                    self.scaler = None
+
+                # Infer model version from metadata if available.
+                model_dir = os.path.dirname(self.model_path)
+                metadata_path = os.path.join(model_dir, "metadata.json")
+                if os.path.exists(metadata_path):
+                    try:
+                        with open(metadata_path, "r") as f:
+                            metadata = json.load(f)
+                        self.model_version = metadata.get("version", os.path.basename(model_dir))
+                    except Exception:
+                        self.model_version = os.path.basename(model_dir) or "legacy"
+                else:
+                    self.model_version = os.path.basename(model_dir) or "legacy"
                 print(f"Loaded AI model from {self.model_path}")
             else:
                 # Create new model
@@ -191,7 +212,7 @@ class DriverAIDetector:
             if features.ndim == 1:
                 features = features.reshape(1, -1)
             
-            # Scale features
+            # Scale features when external scaler exists.
             if self.config['feature_scaling'] and self.scaler is not None:
                 features_scaled = self.scaler.transform(features)
             else:

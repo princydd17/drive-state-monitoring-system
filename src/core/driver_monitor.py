@@ -28,6 +28,7 @@ from core.driver_metrics import (
 from vision.vision_engine import create_vision_processor, draw_landmarks, draw_eye_region
 from audio.sound_system import create_sound_processor, create_smart_alert_system
 from ai.ai_detector import DriverAIDetector, create_multi_detector
+from ai.hybrid_scorer import HybridWeights, combine_scores
 from utils.api_client import APIClient
 
 # Suppress deprecation warnings
@@ -63,9 +64,15 @@ class DriverMonitorSystem:
             'smoothing_alpha': 0.25,
             'hysteresis_margin': 0.02,
             'event_window_seconds': 60.0,
+            'hybrid_ml_weight': 0.6,
+            'hybrid_rule_weight': 0.4,
+            'ml_confidence_threshold': 0.6,
+            'adaptive_weight_floor': 0.35,
+            'fatigue_decay': 0.9,
             'display_mode': 'full',  # full, minimal, none
             'save_video': False,
-            'video_path': 'driver_monitor.mp4'
+            'video_path': 'driver_monitor.mp4',
+            'hard_case_logging': True
         }
         
         if config:
@@ -102,6 +109,7 @@ class DriverMonitorSystem:
         self.yawn_recorded = False
         self.drowsy_state = False
         self.drowsy_started_at = None
+        self.fatigue_score = 0.0
         
         # Statistics
         self.stats = {
@@ -276,7 +284,14 @@ class DriverMonitorSystem:
             'face_detected': False,
             'system_state': 'alert',
             'risk_score': 0.0,
+            'rule_score': 0.0,
+            'ml_score': 0.0,
+            'hybrid_score': 0.0,
+            'fatigue_score': 0.0,
+            'ml_confidence': 0.0,
+            'model_disagreement': False,
             'policy_action': 'none',
+            'fallback_triggered': False,
             'drowsiness': {
                 'detected': False,
                 'severity': 'none',
@@ -363,11 +378,13 @@ class DriverMonitorSystem:
             self.drowsy_started_at = None
         
         # Use AI detector if available
+        model_signals = []
         if self.ai_detector and results['face_detected']:
             try:
                 # Extract features for AI
                 features = self._extract_ai_features(results)
                 ai_prediction, ai_confidence, ai_level = self.ai_detector.predict(features)
+                model_signals.append((bool(ai_prediction), float(ai_confidence)))
                 
                 # Combine with vision results
                 if ai_prediction:
@@ -386,6 +403,7 @@ class DriverMonitorSystem:
             try:
                 features = self._extract_ai_features(results)
                 multi_prediction, multi_confidence, multi_level = self.multi_detector.predict(features)
+                model_signals.append((bool(multi_prediction), float(multi_confidence)))
                 
                 # Combine results
                 if multi_prediction:
@@ -412,10 +430,27 @@ class DriverMonitorSystem:
         if results['yawn']['detected']:
             self.stats['yawn_detections'] += 1
 
-        system_state, risk_score = self._derive_state_and_risk(results)
+        rule_score = self._compute_rule_score(results)
+        ml_score, ml_confidence, model_disagreement = self._compute_ml_score(results, model_signals)
+        weights = HybridWeights(
+            ml_weight=float(self.config.get('hybrid_ml_weight', 0.6)),
+            rule_weight=float(self.config.get('hybrid_rule_weight', 0.4)),
+        )
+        hybrid_score = self._compute_hybrid_score(rule_score, ml_score, ml_confidence, weights)
+        fatigue_score = self._update_fatigue_score(hybrid_score)
+
+        system_state, risk_score = self._derive_state_and_risk(results, hybrid_score, fatigue_score)
         results['system_state'] = system_state
         results['risk_score'] = risk_score
+        results['rule_score'] = rule_score
+        results['ml_score'] = ml_score
+        results['hybrid_score'] = hybrid_score
+        results['fatigue_score'] = fatigue_score
+        results['ml_confidence'] = ml_confidence
+        results['model_disagreement'] = model_disagreement
+        results['fallback_triggered'] = ml_confidence < float(self.config.get('ml_confidence_threshold', 0.6))
         results['policy_action'] = self._maybe_trigger_alert(results, now)
+        self._log_hard_case(results)
         
         # Send to API
         if self.api_client:
@@ -580,16 +615,51 @@ class DriverMonitorSystem:
             return True, 'medium', 0.85
         return True, 'low', 0.75
 
-    def _derive_state_and_risk(self, results):
+    def _compute_rule_score(self, results):
+        """Compute rule-driven risk score from deterministic cues."""
+        if not results['face_detected']:
+            return 0.35
+        drowsy = 1.0 if results['drowsiness']['detected'] else 0.0
+        yawn = 1.0 if results['yawn']['detected'] else 0.0
+        distraction = 1.0 if results['distraction']['detected'] else 0.0
+        closure = min(1.0, float(results['metrics']['eye_closure_duration']) / 2.0)
+        return min(1.0, (0.5 * drowsy) + (0.2 * yawn) + (0.2 * distraction) + (0.1 * closure))
+
+    def _compute_ml_score(self, results, model_signals):
+        """Compute ML-driven score and confidence from detector votes."""
+        if not results['face_detected'] or not model_signals:
+            return 0.2, 0.2, False
+        confidences = [c for _, c in model_signals]
+        weighted_positive = sum((1.0 if p else 0.0) * c for p, c in model_signals)
+        total_conf = max(sum(confidences), 1e-6)
+        ml_score = float(weighted_positive / total_conf)
+        ml_confidence = float(max(confidences))
+        model_disagreement = len(set(p for p, _ in model_signals)) > 1
+        return ml_score, ml_confidence, model_disagreement
+
+    def _compute_hybrid_score(self, rule_score, ml_score, ml_confidence, weights):
+        """Confidence-aware hybrid scoring with safe fallback to rule score."""
+        conf_threshold = float(self.config.get('ml_confidence_threshold', 0.6))
+        if ml_confidence < conf_threshold:
+            return float(rule_score)
+        adaptive_floor = float(self.config.get('adaptive_weight_floor', 0.35))
+        adaptive_ml_weight = max(adaptive_floor, min(ml_confidence, 0.95))
+        adaptive_rule_weight = 1.0 - adaptive_ml_weight
+        adaptive_weights = HybridWeights(ml_weight=adaptive_ml_weight, rule_weight=adaptive_rule_weight)
+        return combine_scores(rule_score, ml_score, adaptive_weights)
+
+    def _update_fatigue_score(self, hybrid_score):
+        """Update fatigue accumulation with exponential decay."""
+        decay = float(self.config.get('fatigue_decay', 0.9))
+        self.fatigue_score = min(1.0, max(0.0, (decay * self.fatigue_score) + ((1.0 - decay) * hybrid_score)))
+        return self.fatigue_score
+
+    def _derive_state_and_risk(self, results, hybrid_score, fatigue_score):
         """Derive unified driver state and a normalized risk score."""
         if not results['face_detected']:
             return 'no_face', 0.35
 
-        drowsy_conf = float(results['drowsiness']['confidence'])
-        yawn_conf = float(results['yawn']['confidence'])
-        distraction_conf = float(results['distraction']['confidence'])
-
-        risk_score = min(1.0, (0.6 * drowsy_conf) + (0.2 * yawn_conf) + (0.2 * distraction_conf))
+        risk_score = min(1.0, (0.7 * hybrid_score) + (0.3 * fatigue_score))
 
         if results['drowsiness']['detected']:
             if results['drowsiness']['severity'] == 'high':
@@ -613,6 +683,14 @@ class DriverMonitorSystem:
                 0.2 if not results['face_detected'] else 0.0
             )),
             'risk_score': float(results['risk_score']),
+            'rule_score': float(results.get('rule_score', 0.0)),
+            'ml_score': float(results.get('ml_score', 0.0)),
+            'hybrid_score': float(results.get('hybrid_score', 0.0)),
+            'fatigue_score': float(results.get('fatigue_score', 0.0)),
+            'ml_confidence': float(results.get('ml_confidence', 0.0)),
+            'model_disagreement': bool(results.get('model_disagreement', False)),
+            'fallback_triggered': bool(results.get('fallback_triggered', False)),
+            'model_version': getattr(self.ai_detector, 'model_version', 'legacy') if self.ai_detector else 'none',
             'policy_action': results.get('policy_action', 'none'),
             'signal_bundle': {
                 'face_detected': results['face_detected'],
@@ -697,7 +775,11 @@ class DriverMonitorSystem:
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
             cv2.putText(frame, f"Yawns/min: {results['metrics']['yawn_frequency']:.1f}", (10, 240), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-            cv2.putText(frame, f"Frame: {self.frame_count}", (10, 270), 
+            cv2.putText(frame, f"Risk: {results.get('risk_score', 0.0):.2f} Fatigue: {results.get('fatigue_score', 0.0):.2f}", (10, 270),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
+            cv2.putText(frame, f"ML conf: {results.get('ml_confidence', 0.0):.2f}", (10, 300),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
+            cv2.putText(frame, f"Frame: {self.frame_count}", (10, 330), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
         
         # Draw controls
@@ -806,7 +888,8 @@ class DriverMonitorSystem:
                 'duration': time.time() - self.stats['start_time'] if self.stats['start_time'] else 0
             },
             'detection_stats': self.stats,
-            'config': self.config
+            'config': self.config,
+            'timeline': self._build_timeline()
         }
         
         try:
@@ -815,6 +898,43 @@ class DriverMonitorSystem:
             print(f"Statistics saved to: {stats_file}")
         except Exception as e:
             print(f"Error saving statistics: {e}")
+
+    def _build_timeline(self):
+        """Create compact timeline for plotting/reporting."""
+        timeline = []
+        for d in self.detection_history:
+            timeline.append(
+                {
+                    'timestamp': d.get('timestamp'),
+                    'frame_number': d.get('frame_number'),
+                    'state': d.get('system_state'),
+                    'risk_score': d.get('risk_score', 0.0),
+                    'fatigue_score': d.get('fatigue_score', 0.0),
+                    'ml_confidence': d.get('ml_confidence', 0.0),
+                    'fallback_triggered': d.get('fallback_triggered', False),
+                    'policy_action': d.get('policy_action', 'none'),
+                }
+            )
+        return timeline
+
+    def _log_hard_case(self, results):
+        """Store low-confidence/disagreement cases for future retraining."""
+        if not self.config.get('hard_case_logging', True):
+            return
+        low_conf = results.get('ml_confidence', 1.0) < float(self.config.get('ml_confidence_threshold', 0.6))
+        disagreement = bool(results.get('model_disagreement', False))
+        if not (low_conf or disagreement):
+            return
+        try:
+            hard_case_dir = os.path.join("data", "hard_cases")
+            os.makedirs(hard_case_dir, exist_ok=True)
+            out_file = os.path.join(hard_case_dir, "hard_cases.jsonl")
+            payload = self._build_backend_event_payload(results)
+            payload['hard_case_reason'] = 'low_confidence' if low_conf else 'model_disagreement'
+            with open(out_file, "a") as f:
+                f.write(json.dumps(payload) + "\n")
+        except Exception as e:
+            print(f"Hard-case logging error: {e}")
 
 def main():
     """Main function to run driver monitor system."""
