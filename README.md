@@ -1,8 +1,18 @@
-# Drowsiness Driver Monitor System
+# Driver State Monitoring Platform
 
-Real-time driver drowsiness and distraction monitoring using computer vision, rule-based detection, and optional ML.
+Real-time Driver State Monitoring Platform with computer vision, ML scoring, and a decision layer for risk-aware alerts and backend telemetry.
 
-## What this project does
+## Project Positioning
+
+This is a **Driver State Monitoring Platform (Real-Time ML + Decision Layer)**.
+
+It is positioned as a system platform, not a single-script detector:
+- Perception layer: face, landmarks, EAR, MAR, head pose
+- Intelligence layer: temporal features, calibrated thresholds, ML/fused inference
+- Decision layer: system state, risk score, and policy actions
+- Platform layer: backend event schema, analytics-ready logging, evaluation and benchmarking tools
+
+## What this platform does
 
 - Detects drowsiness from eye closure (EAR)
 - Detects yawning from mouth opening (MAR)

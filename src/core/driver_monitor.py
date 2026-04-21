@@ -274,6 +274,9 @@ class DriverMonitorSystem:
             'frame_number': self.frame_count,
             'timestamp': now,
             'face_detected': False,
+            'system_state': 'alert',
+            'risk_score': 0.0,
+            'policy_action': 'none',
             'drowsiness': {
                 'detected': False,
                 'severity': 'none',
@@ -409,12 +412,15 @@ class DriverMonitorSystem:
         if results['yawn']['detected']:
             self.stats['yawn_detections'] += 1
 
-        self._maybe_trigger_alert(results, now)
+        system_state, risk_score = self._derive_state_and_risk(results)
+        results['system_state'] = system_state
+        results['risk_score'] = risk_score
+        results['policy_action'] = self._maybe_trigger_alert(results, now)
         
         # Send to API
         if self.api_client:
             try:
-                self.api_client.log_event('detection', results)
+                self.api_client.log_event('driver_state', self._build_backend_event_payload(results))
             except Exception as e:
                 print(f"API logging error: {e}")
         
@@ -574,27 +580,86 @@ class DriverMonitorSystem:
             return True, 'medium', 0.85
         return True, 'low', 0.75
 
+    def _derive_state_and_risk(self, results):
+        """Derive unified driver state and a normalized risk score."""
+        if not results['face_detected']:
+            return 'no_face', 0.35
+
+        drowsy_conf = float(results['drowsiness']['confidence'])
+        yawn_conf = float(results['yawn']['confidence'])
+        distraction_conf = float(results['distraction']['confidence'])
+
+        risk_score = min(1.0, (0.6 * drowsy_conf) + (0.2 * yawn_conf) + (0.2 * distraction_conf))
+
+        if results['drowsiness']['detected']:
+            if results['drowsiness']['severity'] == 'high':
+                return 'fatigue_risk_high', max(risk_score, 0.85)
+            return 'fatigue_risk_low', max(risk_score, 0.6)
+        if results['distraction']['detected']:
+            return 'distraction_transient', max(risk_score, 0.5)
+        if results['yawn']['detected']:
+            return 'fatigue_risk_low', max(risk_score, 0.45)
+        return 'alert', risk_score
+
+    def _build_backend_event_payload(self, results):
+        """Build a standardized backend payload for driver-state events."""
+        return {
+            'schema_version': '1.0',
+            'state': results['system_state'],
+            'confidence': float(max(
+                results['drowsiness']['confidence'],
+                results['yawn']['confidence'],
+                results['distraction']['confidence'],
+                0.2 if not results['face_detected'] else 0.0
+            )),
+            'risk_score': float(results['risk_score']),
+            'policy_action': results.get('policy_action', 'none'),
+            'signal_bundle': {
+                'face_detected': results['face_detected'],
+                'ear': float(results['metrics']['ear']),
+                'mar': float(results['metrics']['mar']),
+                'blink_frequency': float(results['metrics']['blink_frequency']),
+                'yawn_frequency': float(results['metrics']['yawn_frequency']),
+                'eye_closure_duration': float(results['metrics']['eye_closure_duration']),
+                'head_pose': tuple(results['metrics']['head_pose'])
+            },
+            'detection': {
+                'drowsiness': results['drowsiness'],
+                'yawn': results['yawn'],
+                'distraction': results['distraction']
+            },
+            'frame_number': results['frame_number'],
+            'timestamp': results['timestamp'],
+            'latency_ms': int((1.0 / max(self.fps_estimate, 1e-6)) * 1000)
+        }
+
     def _maybe_trigger_alert(self, results, now):
         """Trigger alerts with global cooldown and minimum event persistence."""
         if (now - self.last_alert_time) < float(self.config.get('alert_cooldown', 3.0)):
-            return
+            return 'cooldown'
         if not self.alert_system:
-            return
+            return 'none'
 
         triggered = False
+        action = 'none'
         if results['drowsiness']['detected'] and self._runtime_features.get('eye_closure_duration', 0.0) >= float(self.config.get('minimum_drowsy_duration', 1.5)):
             self.alert_system.trigger_escalating_alert('drowsiness', results['drowsiness']['severity'])
             triggered = True
+            action = 'escalating_audio_alert'
         elif results['yawn']['detected']:
             self.alert_system.trigger_alert('yawn', results['yawn']['severity'])
             triggered = True
+            action = 'audio_alert'
         elif results['distraction']['detected']:
             self.alert_system.trigger_alert('distraction', 'medium')
             triggered = True
+            action = 'audio_alert'
 
         if triggered:
             self.last_alert_time = now
             self.stats['alerts_triggered'] += 1
+            return action
+        return 'none'
     
     def _display_results(self, frame, results):
         """Display detection results on frame."""

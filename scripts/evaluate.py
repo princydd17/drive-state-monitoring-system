@@ -46,6 +46,11 @@ def main():
     )
     parser.add_argument("--timestamp-col", default="timestamp", help="Timestamp column name.")
     parser.add_argument("--fps-col", default="fps", help="FPS column name.")
+    parser.add_argument(
+        "--scenario-col",
+        default="scenario",
+        help="Optional scenario/tag column for per-scenario metrics.",
+    )
     parser.add_argument("--output", default="reports/eval_report.json", help="Output JSON report path.")
     args = parser.parse_args()
 
@@ -80,6 +85,32 @@ def main():
         "confusion_matrix": {"labels": labels, "values": matrix},
         "per_class": {k: v for k, v in report.items() if k in labels},
     }
+
+    # Optional scenario-level reporting for robustness analysis
+    if args.scenario_col in df.columns:
+        scenario_metrics = {}
+        for scenario_name, sdf in df.groupby(args.scenario_col):
+            sy_true = sdf[args.gt_col].astype(str)
+            sy_pred = sdf[args.pred_col].astype(str)
+            s_report = classification_report(sy_true, sy_pred, output_dict=True, zero_division=0)
+            scenario_metrics[str(scenario_name)] = {
+                "count": int(len(sdf)),
+                "accuracy": float(accuracy_score(sy_true, sy_pred)),
+                "precision_macro": float(s_report["macro avg"]["precision"]),
+                "recall_macro": float(s_report["macro avg"]["recall"]),
+                "f1_macro": float(s_report["macro avg"]["f1-score"]),
+                "false_alerts_per_hour": float(
+                    false_alerts_per_hour(
+                        sdf,
+                        args.gt_col,
+                        args.pred_col,
+                        args.positive_label,
+                        args.timestamp_col if args.timestamp_col in sdf.columns else None,
+                        args.fps_col if args.fps_col in sdf.columns else None,
+                    )
+                ),
+            }
+        result["scenario_metrics"] = scenario_metrics
 
     print(json.dumps(result, indent=2))
 

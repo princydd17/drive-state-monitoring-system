@@ -196,6 +196,43 @@ def broadcast_alert(event_type, severity, details=None):
         except Exception as e:
             print(f"Alert callback error: {e}")
 
+def normalize_event_payload(data):
+    """Normalize legacy and structured driver-state payloads into one schema."""
+    event_type = data.get('event_type', 'unknown')
+    severity = data.get('severity', 'medium')
+    duration = float(data.get('duration', 0.0))
+    user_id = data.get('user_id', 'default_user')
+    details = data.get('details')
+
+    # New schema path from monitor client.
+    if details is None and isinstance(data.get('data'), dict):
+        payload = data['data']
+        if payload.get('schema_version') and payload.get('state'):
+            event_type = event_type if event_type != 'unknown' else 'driver_state'
+            risk = float(payload.get('risk_score', 0.0))
+            if risk >= 0.8:
+                severity = 'high'
+            elif risk >= 0.5:
+                severity = 'medium'
+            else:
+                severity = 'low'
+            details = payload
+
+    # Legacy fallback path.
+    if details is None:
+        details = data.get('data', {})
+
+    if not isinstance(details, dict):
+        details = {'raw_details': str(details)}
+
+    if event_type not in {'drowsiness', 'distraction', 'yawn', 'driver_state', 'detection'}:
+        event_type = 'detection'
+
+    if severity not in {'low', 'medium', 'high'}:
+        severity = 'medium'
+
+    return event_type, severity, duration, details, user_id
+
 # API Routes
 @app.route('/')
 def index():
@@ -221,11 +258,7 @@ def log_detection_event():
         if not data:
             return jsonify({'error': 'No data provided'}), 400
         
-        event_type = data.get('event_type', 'unknown')
-        severity = data.get('severity', 'medium')
-        duration = data.get('duration', 0.0)
-        details = data.get('details', {})
-        user_id = data.get('user_id', 'default_user')
+        event_type, severity, duration, details, user_id = normalize_event_payload(data)
         
         event = log_event(event_type, severity, duration, details, user_id)
         
