@@ -8,6 +8,7 @@ import sys
 import os
 import argparse
 import json
+import yaml
 from datetime import datetime
 
 # Add current directory to path for imports
@@ -78,10 +79,10 @@ def load_configuration(args):
     # Load from config file if specified
     if args.config and os.path.exists(args.config):
         try:
-            with open(args.config, 'r') as f:
-                file_config = json.load(f)
-                config.update(file_config)
-                print(f"Loaded configuration from {args.config}")
+            file_config = load_config_file(args.config)
+            apply_config_aliases(file_config)
+            config.update(file_config)
+            print(f"Loaded configuration from {args.config}")
         except Exception as e:
             print(f"Error loading config file: {e}")
     
@@ -102,6 +103,34 @@ def load_configuration(args):
     apply_operation_mode_settings(config)
     
     return config
+
+def load_config_file(config_path):
+    """Load configuration from JSON or YAML file."""
+    ext = os.path.splitext(config_path)[1].lower()
+    with open(config_path, "r") as f:
+        if ext in [".yaml", ".yml"]:
+            loaded = yaml.safe_load(f)
+        else:
+            loaded = json.load(f)
+    return loaded or {}
+
+def apply_config_aliases(config):
+    """Map shorthand config keys to monitor runtime config keys."""
+    # Keep compatibility with stability experiment presets.
+    if "smoothing_alpha" in config and "hybrid_smoothing_alpha" not in config:
+        config["hybrid_smoothing_alpha"] = config["smoothing_alpha"]
+
+    if "min_state_duration" in config:
+        config.setdefault("min_state_duration_default", config["min_state_duration"])
+        config.setdefault("min_state_duration_drowsy", config["min_state_duration"])
+        config.setdefault("min_state_duration_distraction", config["min_state_duration"])
+        config.setdefault("min_state_duration_no_face", config["min_state_duration"])
+
+    if "alert_duration" in config and "alert_min_state_duration" not in config:
+        config["alert_min_state_duration"] = config["alert_duration"]
+
+    if "cooldown" in config and "alert_cooldown" not in config:
+        config["alert_cooldown"] = config["cooldown"]
 
 def apply_sensitivity_settings(config):
     """Apply sensitivity-based configuration adjustments."""

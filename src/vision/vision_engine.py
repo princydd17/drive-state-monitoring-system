@@ -6,12 +6,21 @@ Provides facial landmark detection, eye tracking, and head pose estimation
 
 import cv2
 import numpy as np
-import dlib
 import time
 import os
 import sys
 from typing import Dict, List, Tuple, Optional, Any
 import warnings
+
+try:
+    import dlib
+except Exception:
+    dlib = None
+
+try:
+    import mediapipe as mp
+except Exception:
+    mp = None
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -40,6 +49,8 @@ class VisionProcessor:
         self.detector = None
         self.predictor = None
         self.face_cascade = None
+        self.mp_face_mesh = None
+        self.use_mediapipe = False
         
         # Initialize components
         self._initialize_components()
@@ -61,12 +72,13 @@ class VisionProcessor:
     def _initialize_components(self):
         """Initialize vision components."""
         try:
-            # Initialize dlib face detector
-            self.detector = dlib.get_frontal_face_detector()
-            print("Dlib face detector initialized")
-            
-            # Initialize dlib facial landmark predictor
-            if os.path.exists(self.predictor_path):
+            # Initialize dlib face detector if available
+            if dlib is not None:
+                self.detector = dlib.get_frontal_face_detector()
+                print("Dlib face detector initialized")
+
+            # Initialize dlib facial landmark predictor if available
+            if dlib is not None and os.path.exists(self.predictor_path):
                 self.predictor = dlib.shape_predictor(self.predictor_path)
                 print("Dlib facial landmark predictor initialized")
             else:
@@ -80,6 +92,18 @@ class VisionProcessor:
                 self.face_cascade = None
             else:
                 print("OpenCV face cascade initialized")
+
+            # Fallback: MediaPipe Face Mesh for landmarks when dlib predictor is unavailable
+            if self.predictor is None and mp is not None:
+                self.mp_face_mesh = mp.solutions.face_mesh.FaceMesh(
+                    static_image_mode=False,
+                    max_num_faces=1,
+                    refine_landmarks=True,
+                    min_detection_confidence=0.5,
+                    min_tracking_confidence=0.5,
+                )
+                self.use_mediapipe = True
+                print("MediaPipe Face Mesh fallback initialized")
                 
         except Exception as e:
             print(f"Error initializing vision components: {e}")
@@ -123,36 +147,39 @@ class VisionProcessor:
         start_time = time.time()
         
         try:
-            # Detect face
-            face_rect = self._detect_face(frame)
-            
-            if face_rect is not None:
-                results['face_detected'] = True
-                
-                # Extract landmarks
-                landmarks = self._extract_landmarks(frame, face_rect)
-                
+            landmarks = None
+            if self.use_mediapipe:
+                landmarks = self._extract_landmarks_mediapipe(frame)
                 if landmarks is not None:
-                    results['landmarks'] = landmarks
-                    
-                    # Analyze eyes
-                    eye_analysis = self._analyze_eyes(landmarks)
-                    results['eye_analysis'] = eye_analysis
-                    
-                    # Analyze mouth
-                    mouth_analysis = self._analyze_mouth(landmarks)
-                    results['mouth_analysis'] = mouth_analysis
-                    
-                    # Calculate head pose
-                    head_pose = self._calculate_head_pose(landmarks, frame.shape)
-                    results['head_pose'] = head_pose
-                    
-                    # Analyze facial expression
-                    expression_analysis = self._analyze_facial_expression(landmarks)
-                    results['facial_expression'] = expression_analysis
-                    
-                    # Update history
-                    self._update_history(landmarks, eye_analysis, mouth_analysis)
+                    results['face_detected'] = True
+            else:
+                # Detect face with dlib/OpenCV path
+                face_rect = self._detect_face(frame)
+                if face_rect is not None:
+                    results['face_detected'] = True
+                    landmarks = self._extract_landmarks(frame, face_rect)
+
+            if landmarks is not None:
+                results['landmarks'] = landmarks
+
+                # Analyze eyes
+                eye_analysis = self._analyze_eyes(landmarks)
+                results['eye_analysis'] = eye_analysis
+
+                # Analyze mouth
+                mouth_analysis = self._analyze_mouth(landmarks)
+                results['mouth_analysis'] = mouth_analysis
+
+                # Calculate head pose
+                head_pose = self._calculate_head_pose(landmarks, frame.shape)
+                results['head_pose'] = head_pose
+
+                # Analyze facial expression
+                expression_analysis = self._analyze_facial_expression(landmarks)
+                results['facial_expression'] = expression_analysis
+
+                # Update history
+                self._update_history(landmarks, eye_analysis, mouth_analysis)
             
             results['processing_time'] = time.time() - start_time
             
@@ -161,7 +188,7 @@ class VisionProcessor:
         
         return results
     
-    def _detect_face(self, frame: np.ndarray) -> Optional[dlib.rectangle]:
+    def _detect_face(self, frame: np.ndarray) -> Optional[Any]:
         """
         Detect face in frame using multiple methods.
         
@@ -196,14 +223,16 @@ class VisionProcessor:
                 if len(faces) > 0:
                     # Convert OpenCV rectangle to dlib rectangle
                     x, y, w, h = faces[0]
-                    return dlib.rectangle(x, y, x + w, y + h)
+                    if dlib is not None:
+                        return dlib.rectangle(x, y, x + w, y + h)
+                    return (x, y, w, h)
                     
             except Exception as e:
                 print(f"OpenCV face detection error: {e}")
         
         return None
     
-    def _extract_landmarks(self, frame: np.ndarray, face_rect: dlib.rectangle) -> Optional[np.ndarray]:
+    def _extract_landmarks(self, frame: np.ndarray, face_rect: Any) -> Optional[np.ndarray]:
         """
         Extract facial landmarks from detected face.
         
@@ -215,6 +244,52 @@ class VisionProcessor:
             Optional[np.ndarray]: Array of landmark points
         """
         if self.predictor is None:
+            return None
+
+    def _extract_landmarks_mediapipe(self, frame: np.ndarray) -> Optional[np.ndarray]:
+        """Extract pseudo-68 landmarks from MediaPipe Face Mesh."""
+        if self.mp_face_mesh is None:
+            return None
+        try:
+            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            out = self.mp_face_mesh.process(rgb)
+            if not out.multi_face_landmarks:
+                return None
+
+            h, w = frame.shape[:2]
+            lm = out.multi_face_landmarks[0].landmark
+
+            def to_xy(idx):
+                p = lm[idx]
+                return np.array([int(p.x * w), int(p.y * h)], dtype=np.float32)
+
+            # Build minimal 68-style array for downstream metrics.
+            points = np.zeros((68, 2), dtype=np.float32)
+            # Nose/chin/mouth corners for head pose
+            points[30] = to_xy(1)    # nose tip
+            points[8] = to_xy(152)   # chin
+            points[48] = to_xy(61)   # left mouth corner
+            points[54] = to_xy(291)  # right mouth corner
+            # Eye corners for head pose
+            points[36] = to_xy(33)
+            points[45] = to_xy(263)
+
+            # Left eye 36..41
+            left_eye = [33, 160, 158, 133, 153, 144]
+            for i, idx in enumerate(left_eye):
+                points[36 + i] = to_xy(idx)
+            # Right eye 42..47
+            right_eye = [362, 385, 387, 263, 373, 380]
+            for i, idx in enumerate(right_eye):
+                points[42 + i] = to_xy(idx)
+            # Outer mouth 48..59
+            mouth = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 308]
+            for i, idx in enumerate(mouth):
+                points[48 + i] = to_xy(idx)
+
+            return points
+        except Exception as e:
+            print(f"MediaPipe landmark extraction error: {e}")
             return None
         
         try:

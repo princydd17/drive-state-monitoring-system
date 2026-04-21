@@ -1,0 +1,14 @@
+{
+  "baseline": {
+    "false_alerts_per_hour": 168.56187290969902,
+    "state_flips_per_min": 9.832775919732441
+  },
+  "stabilized": {
+    "false_alerts_per_hour": 36.12040133779264,
+    "state_flips_per_min": 1.806020066889632
+  },
+  "improvement": {
+    "false_alert_reduction_pct": 78.57142857142858,
+    "stability_improvement_pct": 81.63265306122449
+  }
+}

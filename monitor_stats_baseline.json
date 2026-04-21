@@ -1,0 +1,2408 @@
+{
+  "detection_stats": {
+    "alerts_triggered": 14,
+    "duration": 300
+  },
+  "timeline": [
+    {
+      "timestamp": 0.0,
+      "frame_number": 0,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 1.0,
+      "frame_number": 30,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 2.0,
+      "frame_number": 60,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 3.0,
+      "frame_number": 90,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 4.0,
+      "frame_number": 120,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 5.0,
+      "frame_number": 150,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 6.0,
+      "frame_number": 180,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 7.0,
+      "frame_number": 210,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 8.0,
+      "frame_number": 240,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 9.0,
+      "frame_number": 270,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 10.0,
+      "frame_number": 300,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 11.0,
+      "frame_number": 330,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 12.0,
+      "frame_number": 360,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 13.0,
+      "frame_number": 390,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 14.0,
+      "frame_number": 420,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 15.0,
+      "frame_number": 450,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 16.0,
+      "frame_number": 480,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 17.0,
+      "frame_number": 510,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 18.0,
+      "frame_number": 540,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 19.0,
+      "frame_number": 570,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 20.0,
+      "frame_number": 600,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 21.0,
+      "frame_number": 630,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 22.0,
+      "frame_number": 660,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 23.0,
+      "frame_number": 690,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 24.0,
+      "frame_number": 720,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 25.0,
+      "frame_number": 750,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 26.0,
+      "frame_number": 780,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 27.0,
+      "frame_number": 810,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 28.0,
+      "frame_number": 840,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 29.0,
+      "frame_number": 870,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 30.0,
+      "frame_number": 900,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 31.0,
+      "frame_number": 930,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 32.0,
+      "frame_number": 960,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 33.0,
+      "frame_number": 990,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 34.0,
+      "frame_number": 1020,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 35.0,
+      "frame_number": 1050,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 36.0,
+      "frame_number": 1080,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 37.0,
+      "frame_number": 1110,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 38.0,
+      "frame_number": 1140,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 39.0,
+      "frame_number": 1170,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 40.0,
+      "frame_number": 1200,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 41.0,
+      "frame_number": 1230,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 42.0,
+      "frame_number": 1260,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 43.0,
+      "frame_number": 1290,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 44.0,
+      "frame_number": 1320,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 45.0,
+      "frame_number": 1350,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 46.0,
+      "frame_number": 1380,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 47.0,
+      "frame_number": 1410,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 48.0,
+      "frame_number": 1440,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 49.0,
+      "frame_number": 1470,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 50.0,
+      "frame_number": 1500,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 51.0,
+      "frame_number": 1530,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 52.0,
+      "frame_number": 1560,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 53.0,
+      "frame_number": 1590,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 54.0,
+      "frame_number": 1620,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 55.0,
+      "frame_number": 1650,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 56.0,
+      "frame_number": 1680,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 57.0,
+      "frame_number": 1710,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 58.0,
+      "frame_number": 1740,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 59.0,
+      "frame_number": 1770,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 60.0,
+      "frame_number": 1800,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 61.0,
+      "frame_number": 1830,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 62.0,
+      "frame_number": 1860,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 63.0,
+      "frame_number": 1890,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 64.0,
+      "frame_number": 1920,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 65.0,
+      "frame_number": 1950,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 66.0,
+      "frame_number": 1980,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 67.0,
+      "frame_number": 2010,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 68.0,
+      "frame_number": 2040,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 69.0,
+      "frame_number": 2070,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 70.0,
+      "frame_number": 2100,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 71.0,
+      "frame_number": 2130,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 72.0,
+      "frame_number": 2160,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 73.0,
+      "frame_number": 2190,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 74.0,
+      "frame_number": 2220,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 75.0,
+      "frame_number": 2250,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 76.0,
+      "frame_number": 2280,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 77.0,
+      "frame_number": 2310,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 78.0,
+      "frame_number": 2340,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 79.0,
+      "frame_number": 2370,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 80.0,
+      "frame_number": 2400,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 81.0,
+      "frame_number": 2430,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 82.0,
+      "frame_number": 2460,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 83.0,
+      "frame_number": 2490,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 84.0,
+      "frame_number": 2520,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 85.0,
+      "frame_number": 2550,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 86.0,
+      "frame_number": 2580,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 87.0,
+      "frame_number": 2610,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 88.0,
+      "frame_number": 2640,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 89.0,
+      "frame_number": 2670,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 90.0,
+      "frame_number": 2700,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 91.0,
+      "frame_number": 2730,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 92.0,
+      "frame_number": 2760,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 93.0,
+      "frame_number": 2790,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 94.0,
+      "frame_number": 2820,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 95.0,
+      "frame_number": 2850,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 96.0,
+      "frame_number": 2880,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 97.0,
+      "frame_number": 2910,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 98.0,
+      "frame_number": 2940,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 99.0,
+      "frame_number": 2970,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 100.0,
+      "frame_number": 3000,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 101.0,
+      "frame_number": 3030,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 102.0,
+      "frame_number": 3060,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 103.0,
+      "frame_number": 3090,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 104.0,
+      "frame_number": 3120,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 105.0,
+      "frame_number": 3150,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 106.0,
+      "frame_number": 3180,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 107.0,
+      "frame_number": 3210,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 108.0,
+      "frame_number": 3240,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 109.0,
+      "frame_number": 3270,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 110.0,
+      "frame_number": 3300,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 111.0,
+      "frame_number": 3330,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 112.0,
+      "frame_number": 3360,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 113.0,
+      "frame_number": 3390,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 114.0,
+      "frame_number": 3420,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 115.0,
+      "frame_number": 3450,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 116.0,
+      "frame_number": 3480,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 117.0,
+      "frame_number": 3510,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 118.0,
+      "frame_number": 3540,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 119.0,
+      "frame_number": 3570,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 120.0,
+      "frame_number": 3600,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 121.0,
+      "frame_number": 3630,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 122.0,
+      "frame_number": 3660,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 123.0,
+      "frame_number": 3690,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 124.0,
+      "frame_number": 3720,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 125.0,
+      "frame_number": 3750,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 126.0,
+      "frame_number": 3780,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 127.0,
+      "frame_number": 3810,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 128.0,
+      "frame_number": 3840,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 129.0,
+      "frame_number": 3870,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 130.0,
+      "frame_number": 3900,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 131.0,
+      "frame_number": 3930,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 132.0,
+      "frame_number": 3960,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 133.0,
+      "frame_number": 3990,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 134.0,
+      "frame_number": 4020,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 135.0,
+      "frame_number": 4050,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 136.0,
+      "frame_number": 4080,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 137.0,
+      "frame_number": 4110,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 138.0,
+      "frame_number": 4140,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 139.0,
+      "frame_number": 4170,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 140.0,
+      "frame_number": 4200,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 141.0,
+      "frame_number": 4230,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 142.0,
+      "frame_number": 4260,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 143.0,
+      "frame_number": 4290,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 144.0,
+      "frame_number": 4320,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 145.0,
+      "frame_number": 4350,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 146.0,
+      "frame_number": 4380,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 147.0,
+      "frame_number": 4410,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 148.0,
+      "frame_number": 4440,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 149.0,
+      "frame_number": 4470,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 150.0,
+      "frame_number": 4500,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 151.0,
+      "frame_number": 4530,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 152.0,
+      "frame_number": 4560,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 153.0,
+      "frame_number": 4590,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 154.0,
+      "frame_number": 4620,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 155.0,
+      "frame_number": 4650,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 156.0,
+      "frame_number": 4680,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 157.0,
+      "frame_number": 4710,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 158.0,
+      "frame_number": 4740,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 159.0,
+      "frame_number": 4770,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 160.0,
+      "frame_number": 4800,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 161.0,
+      "frame_number": 4830,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 162.0,
+      "frame_number": 4860,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 163.0,
+      "frame_number": 4890,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 164.0,
+      "frame_number": 4920,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 165.0,
+      "frame_number": 4950,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 166.0,
+      "frame_number": 4980,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 167.0,
+      "frame_number": 5010,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 168.0,
+      "frame_number": 5040,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 169.0,
+      "frame_number": 5070,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 170.0,
+      "frame_number": 5100,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 171.0,
+      "frame_number": 5130,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 172.0,
+      "frame_number": 5160,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 173.0,
+      "frame_number": 5190,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 174.0,
+      "frame_number": 5220,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 175.0,
+      "frame_number": 5250,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 176.0,
+      "frame_number": 5280,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 177.0,
+      "frame_number": 5310,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 178.0,
+      "frame_number": 5340,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 179.0,
+      "frame_number": 5370,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 180.0,
+      "frame_number": 5400,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 181.0,
+      "frame_number": 5430,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 182.0,
+      "frame_number": 5460,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 183.0,
+      "frame_number": 5490,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 184.0,
+      "frame_number": 5520,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 185.0,
+      "frame_number": 5550,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 186.0,
+      "frame_number": 5580,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 187.0,
+      "frame_number": 5610,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 188.0,
+      "frame_number": 5640,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 189.0,
+      "frame_number": 5670,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 190.0,
+      "frame_number": 5700,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 191.0,
+      "frame_number": 5730,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 192.0,
+      "frame_number": 5760,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 193.0,
+      "frame_number": 5790,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 194.0,
+      "frame_number": 5820,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 195.0,
+      "frame_number": 5850,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 196.0,
+      "frame_number": 5880,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 197.0,
+      "frame_number": 5910,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 198.0,
+      "frame_number": 5940,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 199.0,
+      "frame_number": 5970,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 200.0,
+      "frame_number": 6000,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 201.0,
+      "frame_number": 6030,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 202.0,
+      "frame_number": 6060,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 203.0,
+      "frame_number": 6090,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 204.0,
+      "frame_number": 6120,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 205.0,
+      "frame_number": 6150,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 206.0,
+      "frame_number": 6180,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 207.0,
+      "frame_number": 6210,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 208.0,
+      "frame_number": 6240,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 209.0,
+      "frame_number": 6270,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 210.0,
+      "frame_number": 6300,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 211.0,
+      "frame_number": 6330,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 212.0,
+      "frame_number": 6360,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 213.0,
+      "frame_number": 6390,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 214.0,
+      "frame_number": 6420,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 215.0,
+      "frame_number": 6450,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 216.0,
+      "frame_number": 6480,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 217.0,
+      "frame_number": 6510,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 218.0,
+      "frame_number": 6540,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 219.0,
+      "frame_number": 6570,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 220.0,
+      "frame_number": 6600,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 221.0,
+      "frame_number": 6630,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 222.0,
+      "frame_number": 6660,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 223.0,
+      "frame_number": 6690,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 224.0,
+      "frame_number": 6720,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 225.0,
+      "frame_number": 6750,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 226.0,
+      "frame_number": 6780,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 227.0,
+      "frame_number": 6810,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 228.0,
+      "frame_number": 6840,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 229.0,
+      "frame_number": 6870,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 230.0,
+      "frame_number": 6900,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 231.0,
+      "frame_number": 6930,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 232.0,
+      "frame_number": 6960,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 233.0,
+      "frame_number": 6990,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 234.0,
+      "frame_number": 7020,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 235.0,
+      "frame_number": 7050,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 236.0,
+      "frame_number": 7080,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 237.0,
+      "frame_number": 7110,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 238.0,
+      "frame_number": 7140,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 239.0,
+      "frame_number": 7170,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 240.0,
+      "frame_number": 7200,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 241.0,
+      "frame_number": 7230,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 242.0,
+      "frame_number": 7260,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 243.0,
+      "frame_number": 7290,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 244.0,
+      "frame_number": 7320,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 245.0,
+      "frame_number": 7350,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 246.0,
+      "frame_number": 7380,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 247.0,
+      "frame_number": 7410,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 248.0,
+      "frame_number": 7440,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 249.0,
+      "frame_number": 7470,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 250.0,
+      "frame_number": 7500,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 251.0,
+      "frame_number": 7530,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 252.0,
+      "frame_number": 7560,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 253.0,
+      "frame_number": 7590,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 254.0,
+      "frame_number": 7620,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 255.0,
+      "frame_number": 7650,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 256.0,
+      "frame_number": 7680,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 257.0,
+      "frame_number": 7710,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 258.0,
+      "frame_number": 7740,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 259.0,
+      "frame_number": 7770,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 260.0,
+      "frame_number": 7800,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 261.0,
+      "frame_number": 7830,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 262.0,
+      "frame_number": 7860,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 263.0,
+      "frame_number": 7890,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 264.0,
+      "frame_number": 7920,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 265.0,
+      "frame_number": 7950,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 266.0,
+      "frame_number": 7980,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 267.0,
+      "frame_number": 8010,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 268.0,
+      "frame_number": 8040,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 269.0,
+      "frame_number": 8070,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 270.0,
+      "frame_number": 8100,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 271.0,
+      "frame_number": 8130,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 272.0,
+      "frame_number": 8160,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 273.0,
+      "frame_number": 8190,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 274.0,
+      "frame_number": 8220,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 275.0,
+      "frame_number": 8250,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 276.0,
+      "frame_number": 8280,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 277.0,
+      "frame_number": 8310,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 278.0,
+      "frame_number": 8340,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 279.0,
+      "frame_number": 8370,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 280.0,
+      "frame_number": 8400,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 281.0,
+      "frame_number": 8430,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 282.0,
+      "frame_number": 8460,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 283.0,
+      "frame_number": 8490,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 284.0,
+      "frame_number": 8520,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 285.0,
+      "frame_number": 8550,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 286.0,
+      "frame_number": 8580,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 287.0,
+      "frame_number": 8610,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 288.0,
+      "frame_number": 8640,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 289.0,
+      "frame_number": 8670,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 290.0,
+      "frame_number": 8700,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 291.0,
+      "frame_number": 8730,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 292.0,
+      "frame_number": 8760,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 293.0,
+      "frame_number": 8790,
+      "state": "alert",
+      "risk_score": 0.3,
+      "fatigue_score": 0.2,
+      "policy_action": "none"
+    },
+    {
+      "timestamp": 294.0,
+      "frame_number": 8820,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 295.0,
+      "frame_number": 8850,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 296.0,
+      "frame_number": 8880,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 297.0,
+      "frame_number": 8910,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 298.0,
+      "frame_number": 8940,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    },
+    {
+      "timestamp": 299.0,
+      "frame_number": 8970,
+      "state": "fatigue_risk_low",
+      "risk_score": 0.7,
+      "fatigue_score": 0.6,
+      "policy_action": "audio_alert"
+    }
+  ]
+}

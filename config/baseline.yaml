@@ -1,0 +1,4 @@
+smoothing_alpha: 0.5
+min_state_duration: 0.5
+alert_duration: 0.5
+cooldown: 1
