@@ -1,0 +1,58 @@
+{
+  "created_at": "2026-04-21T03:11:06.536706",
+  "notes": "synthetic dry-run validation",
+  "experiments": [
+    {
+      "experiment": "features_v1_to_features_v2",
+      "train_dataset": "features_v1",
+      "test_dataset": "features_v2",
+      "train_csv": "data/v1/features_v1.csv",
+      "test_csv": "data/v2/features.csv",
+      "model_dir": "models/exp_features_v1_to_features_v2",
+      "best_model": "logreg",
+      "metrics": {
+        "accuracy": 0.8776859504132232,
+        "precision_macro": 0.8796571036895683,
+        "recall_macro": 0.882622692700747,
+        "f1_macro": 0.8783482127580242,
+        "false_alerts_per_hour": 184.7682119205298,
+        "state_flips_per_min": 44.80132450331126,
+        "per_class_recall": {
+          "alert": 0.8364779874213837,
+          "distraction": 0.8294117647058824,
+          "drowsy": 0.9210526315789473,
+          "yawn": 0.9435483870967742,
+          "macro avg": 0.882622692700747,
+          "weighted avg": 0.8776859504132232
+        }
+      },
+      "prediction_csv": "reports/pred_features_v1_to_features_v2_20260421_031106.csv"
+    },
+    {
+      "experiment": "features_v2_to_features_v1",
+      "train_dataset": "features_v2",
+      "test_dataset": "features_v1",
+      "train_csv": "data/v2/features.csv",
+      "test_csv": "data/v1/features_v1.csv",
+      "model_dir": "models/exp_features_v2_to_features_v1",
+      "best_model": "random_forest",
+      "metrics": {
+        "accuracy": 1.0,
+        "precision_macro": 1.0,
+        "recall_macro": 1.0,
+        "f1_macro": 1.0,
+        "false_alerts_per_hour": 0.0,
+        "state_flips_per_min": 45.450901803607216,
+        "per_class_recall": {
+          "alert": 1.0,
+          "distraction": 1.0,
+          "drowsy": 1.0,
+          "yawn": 1.0,
+          "macro avg": 1.0,
+          "weighted avg": 1.0
+        }
+      },
+      "prediction_csv": "reports/pred_features_v2_to_features_v1_20260421_031106.csv"
+    }
+  ]
+}

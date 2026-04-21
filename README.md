@@ -73,6 +73,31 @@ Outputs:
 * Clips: `data/v1/clips/<label>/`
 * Metadata: `data/v1/labels.csv`
 
+## External Dataset Feature Extraction
+
+Extract training features from dataset videos (for NTHU/UTA-style folders):
+
+```bash
+python scripts/extract_features_from_dataset.py --dataset-root <dataset_path> --output data/v1/features_dataset.csv
+```
+
+Optional label mapping with regex rules:
+
+```bash
+python scripts/extract_features_from_dataset.py --dataset-root <dataset_path> --label-map data/label_map.json --output data/v1/features_dataset.csv
+```
+
+Example `data/label_map.json`:
+
+```json
+{
+  "drowsy|sleepy|fatigue": "drowsy",
+  "yawn": "yawn",
+  "distract|phone|text": "distraction",
+  "alert|normal": "alert"
+}
+```
+
 ## Model Training
 
 Train a model from extracted feature data:
@@ -113,6 +138,46 @@ The retraining script:
 * retrains using `scripts/train_model.py`
 * writes summary to `reports/retrain_summary.json`
 
+## Results
+
+### Pipeline Validation (Dry Run)
+
+We validated the end-to-end retraining pipeline using a controlled dataset to confirm that ingestion, filtering, retraining, and versioned model updates work correctly.
+
+* Hard cases added: **105**
+* Dataset size after merge: **605 samples**
+* Models trained: Logistic Regression (v1), Random Forest (v2)
+* Artifacts generated:
+  * `models/v1/`, `models/v2/`
+  * `reports/retrain_summary.json`
+
+Observed behavior:
+
+* v1 achieved **macro F1 = 1.0**, indicating overfitting on a clean synthetic dataset
+* v2 achieved **macro F1 = 0.906**, reflecting a more regularized model
+
+This run validates the data flywheel:
+hard-case capture -> dataset augmentation -> retraining -> versioned model deployment
+
+This behavior highlights the importance of evaluating on realistic, noisy data rather than relying on clean synthetic datasets.
+
+### Real-World Evaluation (In Progress)
+
+The same pipeline is being applied to live monitoring sessions for realistic performance measurement.
+
+Metrics tracked:
+
+* Macro F1 score
+* False alerts per hour
+* State transitions per minute (stability)
+* Time-to-detection for fatigue events
+
+Current evaluation targets:
+
+* Reduce false alerts through hard-case retraining
+* Improve stability (fewer rapid state flips)
+* Maintain performance under varied lighting, pose, and occlusion
+
 ## Evaluation
 
 Evaluate prediction performance:
@@ -145,6 +210,72 @@ Includes:
 * False alerts per hour
 * State transitions per minute (stability)
 * Overall ranking
+
+## Cross-Dataset Generalization
+
+Run a train-on-A, test-on-B experiment:
+
+```bash
+python scripts/experiment_split.py --train data/nthu_features.csv --test data/uta_features.csv --train-name NTHU --test-name UTA
+```
+
+Run bidirectional evaluation (A->B and B->A):
+
+```bash
+python scripts/experiment_split.py --train data/nthu_features.csv --test data/uta_features.csv --train-name NTHU --test-name UTA --bidirectional
+```
+
+Outputs:
+* experiment JSON summary with macro F1, false alerts/hour, and state flips/min
+* per-experiment prediction CSVs in `reports/`
+
+Cross-dataset evaluation is used to assess robustness under distribution shift and approximate real-world deployment conditions.
+
+### Example Output (Dry Run)
+
+Below is a sample output structure from a synthetic dry run, included to illustrate the experiment format and reporting schema:
+
+```json
+{
+  "created_at": "2026-04-21T03:11:06",
+  "notes": "synthetic dry-run validation",
+  "experiments": [
+    {
+      "experiment": "features_v1_to_features_v2",
+      "train_dataset": "features_v1",
+      "test_dataset": "features_v2",
+      "model_selected": "random_forest",
+      "metrics": {
+        "accuracy": 0.85,
+        "f1_macro": 0.82,
+        "false_alerts_per_hour": 4.7,
+        "state_flips_per_min": 6.2
+      }
+    }
+  ]
+}
+```
+
+> This example demonstrates output structure only. Metrics from synthetic data are not used for performance claims.
+
+### Real-Data Interpretation Checklist
+
+When running experiments on real datasets (for example, NTHU -> UTA), focus on:
+
+* **Generalization gap**  
+  Expect performance to drop when evaluating on unseen datasets. This reflects real-world distribution shift.
+
+* **False alerts per hour**  
+  Lower values indicate more usable systems in practice.
+
+* **State stability (flips/min)**  
+  High-frequency state changes often indicate noisy or unstable predictions.
+
+* **Per-class recall**  
+  Check whether critical states (for example, drowsy) are consistently detected.
+
+* **Confidence + fallback behavior**  
+  Verify that low-confidence predictions trigger rule-based fallback as expected.
 
 ## Session Timeline Plot
 

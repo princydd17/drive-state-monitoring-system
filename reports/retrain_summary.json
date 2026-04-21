@@ -1,0 +1,11 @@
+{
+  "created_at": "2026-04-21T03:05:16.894698",
+  "base_dataset": "data/v1/features_v1.csv",
+  "hard_cases_file": "data/hard_cases/hard_cases.jsonl",
+  "data_added": 105,
+  "merged_rows": 605,
+  "prev_f1": null,
+  "new_f1": 0.9063697318007663,
+  "output_model_dir": "models/v2",
+  "output_dataset": "data/v2/features.csv"
+}

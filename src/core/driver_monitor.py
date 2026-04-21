@@ -68,7 +68,17 @@ class DriverMonitorSystem:
             'hybrid_rule_weight': 0.4,
             'ml_confidence_threshold': 0.6,
             'adaptive_weight_floor': 0.35,
+            'hybrid_smoothing_alpha': 0.2,
+            'disagreement_penalty_threshold': 0.35,
+            'disagreement_penalty_scale': 0.25,
             'fatigue_decay': 0.9,
+            'min_state_duration_default': 1.5,
+            'min_state_duration_drowsy': 2.5,
+            'min_state_duration_distraction': 1.5,
+            'min_state_duration_no_face': 1.0,
+            'alert_min_risk_threshold': 0.65,
+            'alert_min_fatigue_threshold': 0.55,
+            'alert_min_state_duration': 2.0,
             'display_mode': 'full',  # full, minimal, none
             'save_video': False,
             'video_path': 'driver_monitor.mp4',
@@ -110,6 +120,11 @@ class DriverMonitorSystem:
         self.drowsy_state = False
         self.drowsy_started_at = None
         self.fatigue_score = 0.0
+        self.hybrid_score_smoothed = 0.0
+        self.stable_state = "alert"
+        self.stable_state_started_at = None
+        self.pending_state = None
+        self.pending_state_started_at = None
         
         # Statistics
         self.stats = {
@@ -277,6 +292,8 @@ class DriverMonitorSystem:
         self._update_fps(now)
         if self.calibration_started_at is None:
             self.calibration_started_at = now
+        if self.stable_state_started_at is None:
+            self.stable_state_started_at = now
 
         results = {
             'frame_number': self.frame_count,
@@ -437,10 +454,13 @@ class DriverMonitorSystem:
             rule_weight=float(self.config.get('hybrid_rule_weight', 0.4)),
         )
         hybrid_score = self._compute_hybrid_score(rule_score, ml_score, ml_confidence, weights)
+        hybrid_score = self._smooth_hybrid_score(hybrid_score)
         fatigue_score = self._update_fatigue_score(hybrid_score)
 
-        system_state, risk_score = self._derive_state_and_risk(results, hybrid_score, fatigue_score)
+        raw_state, risk_score = self._derive_state_and_risk(results, hybrid_score, fatigue_score)
+        system_state = self._apply_state_stability(raw_state, now)
         results['system_state'] = system_state
+        results['raw_state'] = raw_state
         results['risk_score'] = risk_score
         results['rule_score'] = rule_score
         results['ml_score'] = ml_score
@@ -646,7 +666,22 @@ class DriverMonitorSystem:
         adaptive_ml_weight = max(adaptive_floor, min(ml_confidence, 0.95))
         adaptive_rule_weight = 1.0 - adaptive_ml_weight
         adaptive_weights = HybridWeights(ml_weight=adaptive_ml_weight, rule_weight=adaptive_rule_weight)
-        return combine_scores(rule_score, ml_score, adaptive_weights)
+        hybrid = combine_scores(rule_score, ml_score, adaptive_weights)
+
+        # Penalize high disagreement to reduce twitchy transitions.
+        disagreement = abs(float(ml_score) - float(rule_score))
+        disagree_thr = float(self.config.get('disagreement_penalty_threshold', 0.35))
+        if disagreement > disagree_thr:
+            scale = float(self.config.get('disagreement_penalty_scale', 0.25))
+            penalty = min(0.4, scale * (disagreement - disagree_thr))
+            hybrid = max(0.0, hybrid * (1.0 - penalty))
+        return hybrid
+
+    def _smooth_hybrid_score(self, hybrid_score):
+        """Apply EMA smoothing to hybrid score for temporal stability."""
+        alpha = float(self.config.get('hybrid_smoothing_alpha', 0.2))
+        self.hybrid_score_smoothed = ((1.0 - alpha) * self.hybrid_score_smoothed) + (alpha * float(hybrid_score))
+        return float(self.hybrid_score_smoothed)
 
     def _update_fatigue_score(self, hybrid_score):
         """Update fatigue accumulation with exponential decay."""
@@ -670,6 +705,37 @@ class DriverMonitorSystem:
         if results['yawn']['detected']:
             return 'fatigue_risk_low', max(risk_score, 0.45)
         return 'alert', risk_score
+
+    def _state_min_duration(self, state_name):
+        """State-specific minimum duration before transition is accepted."""
+        default = float(self.config.get('min_state_duration_default', 1.5))
+        if state_name.startswith('fatigue'):
+            return float(self.config.get('min_state_duration_drowsy', 2.5))
+        if state_name.startswith('distraction'):
+            return float(self.config.get('min_state_duration_distraction', 1.5))
+        if state_name == 'no_face':
+            return float(self.config.get('min_state_duration_no_face', 1.0))
+        return default
+
+    def _apply_state_stability(self, proposed_state, now):
+        """Require minimum persistence before committing state transitions."""
+        if proposed_state == self.stable_state:
+            self.pending_state = None
+            self.pending_state_started_at = None
+            return self.stable_state
+
+        if self.pending_state != proposed_state:
+            self.pending_state = proposed_state
+            self.pending_state_started_at = now
+            return self.stable_state
+
+        elapsed = now - (self.pending_state_started_at or now)
+        if elapsed >= self._state_min_duration(proposed_state):
+            self.stable_state = proposed_state
+            self.stable_state_started_at = now
+            self.pending_state = None
+            self.pending_state_started_at = None
+        return self.stable_state
 
     def _build_backend_event_payload(self, results):
         """Build a standardized backend payload for driver-state events."""
@@ -717,6 +783,16 @@ class DriverMonitorSystem:
             return 'cooldown'
         if not self.alert_system:
             return 'none'
+
+        # Gate alerting on sustained state and minimum risk/fatigue to reduce false alarms.
+        state_age = now - (self.stable_state_started_at or now)
+        min_state_age = float(self.config.get('alert_min_state_duration', 2.0))
+        if state_age < min_state_age:
+            return 'state_not_stable'
+        if float(results.get('risk_score', 0.0)) < float(self.config.get('alert_min_risk_threshold', 0.65)):
+            return 'risk_below_threshold'
+        if float(results.get('fatigue_score', 0.0)) < float(self.config.get('alert_min_fatigue_threshold', 0.55)):
+            return 'fatigue_below_threshold'
 
         triggered = False
         action = 'none'
