@@ -3,6 +3,11 @@
 A real-time driver monitoring system focused on perception, decision-making, and measurable safety performance.
 Built as a modular platform that combines vision signals, temporal modeling, and hybrid ML scoring.
 
+## Spotlight: Explainable Risk Engine
+
+This system is designed as a real-time decision support layer, not only a detector.  
+Each session output includes risk level, trend direction, top contributing factors, explanation confidence, and a recommended action.
+
 ## Overview
 
 This project is designed as a full pipeline rather than a standalone detection script. It integrates signal extraction, model inference, decision logic, and backend logging into a single system.
@@ -19,6 +24,7 @@ This project is designed as a full pipeline rather than a standalone detection s
 * Session-based calibration for personalized thresholds
 * Hybrid scoring combining rule-based logic and ML predictions
 * Fatigue accumulation over time using decay-based modeling
+* Session-level explainability with top risk factors, fatigue trend, and recommended action
 * Structured backend events using a standardized `driver_state` schema
 * Reproducible evaluation and benchmarking workflow
 
@@ -49,6 +55,26 @@ python src/start_monitor.py --sensitivity high
 python src/start_monitor.py --no-ai
 python src/start_monitor.py --no-api
 ```
+
+### Example Runtime Output
+
+```json
+{
+  "state": "fatigue_risk_high",
+  "risk_score": 0.81,
+  "trend": "increasing",
+  "top_factors": [
+    "prolonged eye closure",
+    "high blink frequency"
+  ],
+  "explanation_confidence": 0.76,
+  "recommended_action": "take_break"
+}
+```
+
+> Output includes interpretable factors and action recommendations derived from real-time signal contributions.
+
+This is feature-based interpretability from real-time signals, not post-hoc SHAP/LIME attribution.
 
 ## Dataset Collection
 
@@ -290,6 +316,7 @@ Includes:
 * fatigue score
 * ML confidence overlay
 * fallback trigger markers
+* trend and action markers with top-factor annotations for key events
 
 ## Core Components
 

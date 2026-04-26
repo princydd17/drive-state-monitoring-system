@@ -11,6 +11,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
+def _format_top_factors(value):
+    if isinstance(value, list):
+        return ", ".join(str(v) for v in value[:2]) if value else ""
+    return ""
+
+
 def main():
     parser = argparse.ArgumentParser(description="Plot risk/fatigue timeline from monitor stats file.")
     parser.add_argument("--input", required=True, help="Path to monitor_stats_*.json")
@@ -48,6 +54,44 @@ def main():
     transitions = df[df["state"] != "alert"]
     if not transitions.empty:
         plt.scatter(transitions["t_sec"], transitions["risk_score"], marker="x", label="state transition", alpha=0.8)
+
+    if "trend" in df.columns:
+        increasing = df[df["trend"] == "increasing"]
+        if not increasing.empty:
+            plt.scatter(
+                increasing["t_sec"],
+                increasing["fatigue_score"],
+                marker="^",
+                s=24,
+                alpha=0.7,
+                label="trend increasing",
+            )
+
+    if "recommended_action" in df.columns:
+        actions = df[df["recommended_action"].isin(["stay_alert", "take_break"])]
+        if not actions.empty:
+            plt.scatter(
+                actions["t_sec"],
+                actions["risk_score"],
+                marker="D",
+                s=24,
+                alpha=0.7,
+                label="recommended action",
+            )
+            # Keep annotations sparse for readability.
+            for _, row in actions.iloc[::max(1, len(actions) // 8)].iterrows():
+                label = row["recommended_action"]
+                factors = _format_top_factors(row.get("top_factors", []))
+                if factors:
+                    label = f"{label}: {factors}"
+                plt.annotate(
+                    label,
+                    (row["t_sec"], row["risk_score"]),
+                    textcoords="offset points",
+                    xytext=(4, 8),
+                    fontsize=7,
+                    alpha=0.9,
+                )
 
     plt.title("Session Timeline: Risk, Fatigue, and Model Confidence")
     plt.xlabel("Time (seconds)")

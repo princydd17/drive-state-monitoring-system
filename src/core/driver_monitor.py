@@ -29,6 +29,7 @@ from vision.vision_engine import create_vision_processor, draw_landmarks, draw_e
 from audio.sound_system import create_sound_processor, create_smart_alert_system
 from ai.ai_detector import DriverAIDetector, create_multi_detector
 from ai.hybrid_scorer import HybridWeights, combine_scores
+from ai.explanation_engine import compute_factor_scores, top_factor_labels, recommended_action
 from utils.api_client import APIClient
 
 # Suppress deprecation warnings
@@ -82,7 +83,8 @@ class DriverMonitorSystem:
             'display_mode': 'full',  # full, minimal, none
             'save_video': False,
             'video_path': 'driver_monitor.mp4',
-            'hard_case_logging': True
+            'hard_case_logging': True,
+            'trend_window_seconds': 10.0
         }
         
         if config:
@@ -120,6 +122,7 @@ class DriverMonitorSystem:
         self.drowsy_state = False
         self.drowsy_started_at = None
         self.fatigue_score = 0.0
+        self.fatigue_history = deque(maxlen=1800)
         self.hybrid_score_smoothed = 0.0
         self.stable_state = "alert"
         self.stable_state_started_at = None
@@ -307,7 +310,11 @@ class DriverMonitorSystem:
             'fatigue_score': 0.0,
             'ml_confidence': 0.0,
             'model_disagreement': False,
+            'explanation_confidence': 0.0,
             'policy_action': 'none',
+            'trend': 'stable',
+            'top_factors': [],
+            'recommended_action': 'none',
             'fallback_triggered': False,
             'drowsiness': {
                 'detected': False,
@@ -456,6 +463,10 @@ class DriverMonitorSystem:
         hybrid_score = self._compute_hybrid_score(rule_score, ml_score, ml_confidence, weights)
         hybrid_score = self._smooth_hybrid_score(hybrid_score)
         fatigue_score = self._update_fatigue_score(hybrid_score)
+        self.fatigue_history.append((now, fatigue_score))
+        trend = self._derive_fatigue_trend(now)
+        top_factors = self._derive_top_factors(results)
+        explanation_confidence = self._derive_explanation_confidence(results, ml_confidence, model_disagreement)
 
         raw_state, risk_score = self._derive_state_and_risk(results, hybrid_score, fatigue_score)
         system_state = self._apply_state_stability(raw_state, now)
@@ -468,6 +479,10 @@ class DriverMonitorSystem:
         results['fatigue_score'] = fatigue_score
         results['ml_confidence'] = ml_confidence
         results['model_disagreement'] = model_disagreement
+        results['explanation_confidence'] = explanation_confidence
+        results['trend'] = trend
+        results['top_factors'] = top_factors
+        results['recommended_action'] = recommended_action(risk_score, fatigue_score, system_state)
         results['fallback_triggered'] = ml_confidence < float(self.config.get('ml_confidence_threshold', 0.6))
         results['policy_action'] = self._maybe_trigger_alert(results, now)
         self._log_hard_case(results)
@@ -706,6 +721,41 @@ class DriverMonitorSystem:
             return 'fatigue_risk_low', max(risk_score, 0.45)
         return 'alert', risk_score
 
+    def _derive_fatigue_trend(self, now):
+        """Estimate short-horizon fatigue trend from score history."""
+        if len(self.fatigue_history) < 2:
+            return 'stable'
+        window = float(self.config.get('trend_window_seconds', 10.0))
+        recent = [(ts, score) for ts, score in self.fatigue_history if (now - ts) <= window]
+        if len(recent) < 2:
+            return 'stable'
+        start_score = float(recent[0][1])
+        end_score = float(recent[-1][1])
+        delta = end_score - start_score
+        if delta >= 0.05:
+            return 'increasing'
+        if delta <= -0.05:
+            return 'decreasing'
+        return 'stable'
+
+    def _derive_top_factors(self, results):
+        """Compute top explanatory factors for current risk context."""
+        if not results.get('face_detected', False):
+            return ['face not detected']
+        factor_scores = compute_factor_scores(results.get('metrics', {}), self.dynamic_thresholds)
+        return top_factor_labels(factor_scores, limit=3)
+
+    def _derive_explanation_confidence(self, results, ml_confidence, model_disagreement):
+        """
+        Estimate confidence in explanation quality from signal strength and agreement.
+        """
+        if not results.get('face_detected', False):
+            return 0.2
+        factor_scores = compute_factor_scores(results.get('metrics', {}), self.dynamic_thresholds)
+        strongest_factor = max(factor_scores.values()) if factor_scores else 0.0
+        agreement_score = 0.35 if model_disagreement else 0.8
+        return float(min(1.0, max(0.0, (0.55 * float(ml_confidence)) + (0.3 * strongest_factor) + (0.15 * agreement_score))))
+
     def _state_min_duration(self, state_name):
         """State-specific minimum duration before transition is accepted."""
         default = float(self.config.get('min_state_duration_default', 1.5))
@@ -754,10 +804,14 @@ class DriverMonitorSystem:
             'hybrid_score': float(results.get('hybrid_score', 0.0)),
             'fatigue_score': float(results.get('fatigue_score', 0.0)),
             'ml_confidence': float(results.get('ml_confidence', 0.0)),
+            'explanation_confidence': float(results.get('explanation_confidence', 0.0)),
             'model_disagreement': bool(results.get('model_disagreement', False)),
             'fallback_triggered': bool(results.get('fallback_triggered', False)),
             'model_version': getattr(self.ai_detector, 'model_version', 'legacy') if self.ai_detector else 'none',
             'policy_action': results.get('policy_action', 'none'),
+            'trend': results.get('trend', 'stable'),
+            'top_factors': list(results.get('top_factors', [])),
+            'recommended_action': results.get('recommended_action', 'none'),
             'signal_bundle': {
                 'face_detected': results['face_detected'],
                 'ear': float(results['metrics']['ear']),
@@ -855,7 +909,13 @@ class DriverMonitorSystem:
                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
             cv2.putText(frame, f"ML conf: {results.get('ml_confidence', 0.0):.2f}", (10, 300),
                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
-            cv2.putText(frame, f"Frame: {self.frame_count}", (10, 330), 
+            cv2.putText(frame, f"Expl conf: {results.get('explanation_confidence', 0.0):.2f}", (10, 330),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
+            cv2.putText(frame, f"Trend: {results.get('trend', 'stable')}", (10, 360),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
+            cv2.putText(frame, f"Action: {results.get('recommended_action', 'none')}", (10, 390),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
+            cv2.putText(frame, f"Frame: {self.frame_count}", (10, 420), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
         
         # Draw controls
@@ -987,8 +1047,12 @@ class DriverMonitorSystem:
                     'risk_score': d.get('risk_score', 0.0),
                     'fatigue_score': d.get('fatigue_score', 0.0),
                     'ml_confidence': d.get('ml_confidence', 0.0),
+                    'explanation_confidence': d.get('explanation_confidence', 0.0),
                     'fallback_triggered': d.get('fallback_triggered', False),
                     'policy_action': d.get('policy_action', 'none'),
+                    'trend': d.get('trend', 'stable'),
+                    'top_factors': d.get('top_factors', []),
+                    'recommended_action': d.get('recommended_action', 'none'),
                 }
             )
         return timeline
